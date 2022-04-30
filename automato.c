@@ -134,19 +134,20 @@ void automatoImPar(PilhaDinamica *pilha, char *string, int contador1, int meio){
     char letra;
     int contador2 = 0;
 
-    for (int i = 0; i < contador1; i++){
+     for (int i = 0; i < contador1; i++){
         letra = string[i];
-
-        if (contador2 <= meio){
-            empilhaDinamica(letra, &pilha);
-            
+        if (contador2 < meio){
+            empilhaDinamica(letra, pilha);
+            printf("empilhou letra %c\n", letra);
         }else if (contador2 > meio){
             if (letra == pilha->topo){
                 desempilhaDinamica(pilha);
+                printf("desemplilhou letra %c\n", letra);
             }
         }
         contador2++;
     }
+    printf("contador2 vale %d\n", contador2);
 
     if (pilha->topo == NULL){
         printf("palavra -> %s eh um palindromo", string);
