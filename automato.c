@@ -17,7 +17,6 @@ typedef struct NoPilha{ // struct NoPilha
 
 //---------------------------------------------------------//
 typedef struct{ // struct PilhaDinamica
-
     PtrNoPilha topo;
     int tamanho;
 } PilhaDinamica;
@@ -79,11 +78,15 @@ void topoDinamica(PilhaDinamica *pilha){// mostra o tamanho da pilha
 } // topoDinamica
 
 //---------------------------------------------------------//
-void imprimeDinamica(PilhaDinamica *pilha){
-    PtrNoPilha aux; // ponteiro nó de pilha
-    for (aux = pilha->topo; aux != NULL; aux = aux->prox){ // condição
-        printf("%c", aux->objeto);
-    } // for
+void imprimeDinamica(PilhaDinamica *pilha, char *string){
+
+    if (pilha->topo == NULL){
+        printf("-------automato esta no estado q4-------\n");
+        printf("palavra -> %s eh um palindromo", string);
+
+    }else{
+        printf("palavra -> %s nao eh um palindromo", string);
+    }
 } // imprimeDinamica
 
 //---------------------------------------------------------//
@@ -98,78 +101,70 @@ void destruirDinamica(PilhaDinamica *pilha){
 } // destruirDinamica
 
 //---------------------------------------------------------//
-void automatoPar(PilhaDinamica *pilha, char *string, int contador1, int meio){
-    char letra;
-    int contador2 = 0;
-    for (int i = 0; i < contador1; i++){
-        letra = string[i];
-        if (contador2 < meio){
-            empilhaDinamica(letra, pilha);
+void automatoPar(PilhaDinamica *pilha, char letra, int meio, int contador){
+    if (contador < meio){
+        empilhaDinamica(letra, pilha);
+        printf("-------automato esta no estado q2-------\n");
+        printf("-------    empilhou a letra %c    -------\n\n", letra);
+    }else if (contador >= meio){
+        if (letra == pilha->topo->objeto){
+            desempilhaDinamica(pilha);
+            printf("-------automato esta no estado q3-------\n");
+            printf("-------   desempilhou a letra %c  -------\n\n", letra);
         }
-        else if (contador2 >= meio){
-            if (letra == pilha->topo->objeto){
-                desempilhaDinamica(pilha);
-            }
-        }
-        contador2++;
     }
-
-    if (pilha->topo == NULL){
-        printf("palavra -> %s eh um palindromo", string);
-    }else{
-        printf("palavra -> %s nao eh um palindromo", string);
-    }
-
-    destruirDinamica(pilha);
 }
 
 //---------------------------------------------------------//
-void automatoImpar(PilhaDinamica *pilha, char *string, int contador1, int meio){
-
-    char letra;
-    int contador2 = 0;
-
-    for (int i = 0; i < contador1; i++){
-        letra = string[i];
-
-        if (contador2 < meio){
-            empilhaDinamica(letra, pilha);
-        }else if (contador2 > meio){
-            if (letra == pilha->topo->objeto){
-                desempilhaDinamica(pilha);
-            }
+void automatoImpar(PilhaDinamica *pilha, char letra, int meio, int contador){
+    if (contador < meio){
+        empilhaDinamica(letra, pilha);
+        printf("-------automato esta no estado q2-------\n");
+        printf("-------    empilhou a letra %c    -------\n\n", letra);
+    }else if (contador > meio){
+        if (letra == pilha->topo->objeto){
+            desempilhaDinamica(pilha);
+            printf("-------automato esta no estado q3-------\n");
+            printf("-------   desempilhou a letra %c  -------\n\n", letra);
         }
-        contador2++;
     }
-
-    if (pilha->topo == NULL){
-        printf("palavra -> %s eh um palindromo", string);
-    }else{
-        printf("palavra -> %s nao eh um palindromo", string);
-    }
-
-    destruirDinamica(pilha);
 }
 
-//---------------------------------------------------------//
 int main(){
 
     PilhaDinamica p;
     iniciaDinamica(&p);
 
-    int contador1 = 0, meio;
-    char string[100];
+    int contador1 = 0, meio, contador2 = 0, parada = 0;
+    char string[100], letra;
+
     printf("Digite a palavra para descobrir se eh um palindromo\n");
     scanf("%s", string);
 
     contador1 = strlen(string);
     meio = contador1 / 2;
 
-    if (contador1 % 2 == 0){
-        automatoPar(&p, string, contador1, meio);
-    }else{
-        automatoImpar(&p, string, contador1, meio);
+    for (int i = 0; i < contador1; i++){
+        letra = string[i];
+        if (letra == 'a' || letra == 'b' || letra == 'c' || letra == 'd' || letra == 'e'){
+            if (contador1 % 2 == 0){
+                automatoPar(&p, letra, meio, contador2);
+            }else{
+                automatoImpar(&p, letra, meio, contador2);
+            }
+            contador2++;
+        }else{
+            printf("ha String %s nao eh aceita pelo automato\n", string);
+            parada = 1;
+            break;
+        }
     }
+
+    if (parada == 0){
+        imprimeDinamica(&p, string);
+    }
+
+    destruirDinamica(&p);
 
     return 0;
 }
